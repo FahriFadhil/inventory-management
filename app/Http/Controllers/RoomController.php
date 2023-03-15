@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Room;
+use App\User;
 use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +19,8 @@ class RoomController extends Controller
      */
     public function index()
     {
-        return view('room.index');
+        $data = [Room::all(), User::all()];
+        return view('room.index', compact('data'));
     }
 
     /**
@@ -24,7 +30,7 @@ class RoomController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -35,7 +41,8 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Room::create($request->all());
+        return back();
     }
 
     /**
@@ -55,9 +62,10 @@ class RoomController extends Controller
      * @param  \App\Room  $room
      * @return \Illuminate\Http\Response
      */
-    public function edit(Room $room)
+    public function edit($id)
     {
-        //
+        $room = Room::find($id);
+        return $room;
     }
 
     /**
@@ -67,9 +75,12 @@ class RoomController extends Controller
      * @param  \App\Room  $room
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Room $room)
+    public function update(Request $request, $id)
     {
-        //
+        $room = Room::findOrFail($id);
+        $data = $request->all();
+        $room->update($data);
+        return redirect('/room');
     }
 
     /**
@@ -78,8 +89,10 @@ class RoomController extends Controller
      * @param  \App\Room  $room
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Room $room)
+    public function destroy($id)
     {
-        //
+        $data = Room::findOrFail($id);
+        $data->delete();
+        return back();
     }
 }
